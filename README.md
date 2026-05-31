@@ -175,10 +175,9 @@ semantic tag), and the export pipeline.
 
 ## License
 
-Carmela is released under the **Creative Commons Attribution‑NonCommercial 4.0
-International licence (CC BY‑NC 4.0)**. The source code in this repository is
-additionally available under the **MIT licence**. When both apply, the
-non‑commercial restriction governs combined use of the project.
+Carmela — code, models, assets, brand and documentation — is released under
+the **Creative Commons Attribution‑NonCommercial 4.0 International licence
+(CC BY‑NC 4.0)**. See [`LICENSE`](LICENSE) for the full text.
 
 | Usage                                  | Status         |
 |----------------------------------------|----------------|
@@ -187,9 +186,6 @@ non‑commercial restriction governs combined use of the project.
 | ❌ Commercial use                       | Prohibited     |
 | ❌ Model training for commercial tools  | Prohibited     |
 | ❌ Commercial R&D                       | Prohibited     |
-
-- Code licence: see [`LICENSE`](LICENSE)
-- Project (assets, models, docs) licence: see [`LICENSE-CC-BY-NC.md`](LICENSE-CC-BY-NC.md)
 
 ### Commercial inquiry
 
@@ -200,8 +196,7 @@ Subject: **"Carmela Commercial Inquiry"**
 
 ### Bundled model weights
 
-TRELLIS.2 (Microsoft, MIT) · DINOv3 ViT‑L/16 (Meta, DINOv3 licence) · RMBG‑2.0
-(Bria, gated CC BY‑NC). Each model's original licence is preserved alongside
-the weights in the bundle. Carmela has accepted these licences on your behalf
-for end‑user distribution under CC BY‑NC; the same restrictions apply
-downstream.
+TRELLIS.2 (Microsoft) · DINOv3 ViT‑L/16 (Meta) · RMBG‑2.0 (Bria). Each
+model's original licence is preserved alongside the weights in the bundle.
+Carmela has accepted these licences on your behalf for end‑user
+distribution under CC BY‑NC; the same restrictions apply downstream.

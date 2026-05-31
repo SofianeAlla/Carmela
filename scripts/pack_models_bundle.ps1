@@ -17,7 +17,10 @@
 param(
     [string]$OutDir = "dist-bundle",
     [switch]$Split,        # produce one archive per repo (recommended for CDN partial recovery)
-    [int]$ZstdLevel = 19   # 1=fast, 22=max; 19 is the sweet spot for one-time pack
+    [int]$ZstdLevel = 19,  # 1=fast, 22=max; 19 is the sweet spot for one-time pack
+    [string]$Publish,      # if set: gh release create <tag> with the bundle as assets
+    [string]$Repo = "SofianeAlla/Carmela",   # gh release target repo
+    [string]$ReleaseTitle  # overrides "Model weights <tag>"
 )
 
 $ErrorActionPreference = "Stop"
@@ -101,7 +104,32 @@ if ($Split) {
     Write-Host ("[done] models.tar.zst {0:F2} GB" -f $sz) -ForegroundColor Green
 }
 
-Write-Host ""
-Write-Host "Upload the contents of $dist to your CDN (e.g. s3://, R2://, or static host)." -ForegroundColor Yellow
-Write-Host "Then set CARMELA_MODELS_BUNDLE_URL in the shipped .env / installer config:" -ForegroundColor Yellow
-Write-Host "  CARMELA_MODELS_BUNDLE_URL=https://cdn.bespokeai.build/carmela/v1" -ForegroundColor DarkGray
+if ($Publish) {
+    Write-Host ""
+    Write-Host "[publish] uploading bundle to GitHub Releases ($Repo, tag $Publish)..." -ForegroundColor Cyan
+    $gh = Get-Command gh -ErrorAction SilentlyContinue
+    if (-not $gh) { Write-Host "[FAIL] gh CLI not installed. https://cli.github.com" -ForegroundColor Red; exit 1 }
+    $title = if ($ReleaseTitle) { $ReleaseTitle } else { "Model weights $Publish" }
+    $assets = Get-ChildItem $dist -File | ForEach-Object { $_.FullName }
+    & gh release view $Publish --repo $Repo *> $null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "[publish] release $Publish exists - uploading assets (--clobber)" -ForegroundColor DarkGray
+        & gh release upload $Publish $assets --repo $Repo --clobber
+    } else {
+        $notes = "TRELLIS.2-4B + TRELLIS-image-large + DINOv3 ViT-L/16 + RMBG-2.0`n`n" +
+                 "Carmela end-user model bundle. Pulled automatically by " +
+                 "scripts/install.ps1 via CARMELA_MODELS_BUNDLE_URL."
+        & gh release create $Publish $assets --repo $Repo --title $title --notes $notes
+    }
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "[OK] published $Publish - users at next install pull from:" -ForegroundColor Green
+        Write-Host "  https://github.com/$Repo/releases/latest/download/<asset>" -ForegroundColor DarkGray
+    } else {
+        Write-Host "[FAIL] gh release publish error" -ForegroundColor Red
+    }
+} else {
+    Write-Host ""
+    Write-Host "Next step:  publish to a GitHub Release (recommended, free, zero-config for users):" -ForegroundColor Yellow
+    Write-Host "  .\scripts\pack_models_bundle.ps1 -Split -Publish v1.0-models" -ForegroundColor DarkGray
+    Write-Host "Or upload $dist to your own CDN and set CARMELA_MODELS_BUNDLE_URL." -ForegroundColor DarkGray
+}

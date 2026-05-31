@@ -32,13 +32,11 @@ if (Test-Path $envFile) {
 
 $bundleUrl = $env:CARMELA_MODELS_BUNDLE_URL
 if ([string]::IsNullOrWhiteSpace($bundleUrl)) {
-    Write-Host "[bundle] CARMELA_MODELS_BUNDLE_URL not set. Skipping bundle fetch." -ForegroundColor Yellow
-    Write-Host "         Set it in .env to enable zero-friction installs:" -ForegroundColor DarkGray
-    Write-Host "           CARMELA_MODELS_BUNDLE_URL=https://cdn.bespokeai.build/carmela/models-v1/" -ForegroundColor DarkGray
-    Write-Host "         End users will then download weights from your CDN" -ForegroundColor DarkGray
-    Write-Host "         instead of HuggingFace (no auth, no licenses)." -ForegroundColor DarkGray
-    Pop-Location
-    exit 0
+    # Default: GitHub Releases "latest" for SofianeAlla/Carmela. This auto-
+    # resolves to whichever release tag is currently marked "latest", so
+    # end-user installs never go stale when models are bumped.
+    $bundleUrl = "https://github.com/SofianeAlla/Carmela/releases/latest/download"
+    Write-Host "[bundle] CARMELA_MODELS_BUNDLE_URL not set, using default: $bundleUrl" -ForegroundColor DarkGray
 }
 $bundleUrl = $bundleUrl.TrimEnd('/')
 

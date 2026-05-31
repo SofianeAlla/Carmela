@@ -118,37 +118,43 @@ npm run build:win
 
 Produces an NSIS installer in `desktop/dist/`.
 
-### Zero‑friction install for end users (shipping the model bundle)
+### Model weights — zero‑config for end users
 
-By default, the installer routes model weight downloads through HuggingFace —
-which means end users would need an HF account, a token, and to accept the
-DINOv3 + RMBG‑2.0 licenses. **Carmela supports a one‑variable override** so
-you can ship a CDN bundle and your users get everything in one step:
+End users don't touch HuggingFace. The installer pulls every model weight
+from this repo's **GitHub Releases** by default, so the install is one
+command from a clean machine:
 
-1. **One time, on your dev machine** (where you've already accepted the
-   licenses): pack your local HF cache into a CDN‑ready archive set —
-   ```powershell
-   .\scripts\pack_models_bundle.ps1 -Split
-   ```
-   Produces `dist-bundle/manifest.json` + one `*.tar.zst` per model repo
-   (TRELLIS.2‑4B, TRELLIS‑image‑large, DINOv3 ViT‑L/16, RMBG‑2.0). About
-   ~13 GB compressed.
+```powershell
+git clone https://github.com/SofianeAlla/Carmela.git
+cd Carmela
+.\scripts\install.ps1
+```
 
-2. **Upload** the contents of `dist-bundle/` to your CDN (S3, R2, Bespoke's
-   Supabase bucket, GitHub Releases, anything that serves static files).
+That's it. `scripts/fetch_models_bundle.ps1` resolves the URL
+`https://github.com/SofianeAlla/Carmela/releases/latest/download/` and pulls
+`manifest.json` + `trellis2-4b.tar.zst` + `trellis-image-large.tar.zst` +
+`dinov3-vitl16.tar.zst` + `rmbg-2.tar.zst` (≈13 GB compressed) into
+`~/.cache/huggingface/hub/` in the layout `huggingface_hub` expects.
 
-3. **Set the URL** in the installer's `.env` (or `.env.example` shipped with
-   Carmela) so it's baked into the installed app:
-   ```ini
-   CARMELA_MODELS_BUNDLE_URL=https://cdn.bespokeai.build/carmela/v1
-   ```
+#### Publishing a new bundle (project maintainer)
 
-4. **End users** now run `.\scripts\install.ps1` and `fetch_models_bundle.ps1`
-   pulls the archives straight from your CDN into their HF cache — no HF
-   auth, no license click‑through, no `WinError 10054` retry loop.
+Run once per model update on your dev machine:
 
-The dev path (HF + tokens + licenses) is still available when
-`CARMELA_MODELS_BUNDLE_URL` is empty.
+```powershell
+.\scripts\pack_models_bundle.ps1 -Split -Publish v1.0-models
+```
+
+The packer:
+1. Verifies all 4 repos are in your local HF cache (you already accepted the licenses)
+2. Builds one `tar.zst` per repo at zstd level 19
+3. Emits a `manifest.json` with sha256 + sizes
+4. Calls `gh release create v1.0-models` on `SofianeAlla/Carmela` and uploads all assets
+
+Every fresh clone after that automatically picks up the new bundle via the
+`/releases/latest/download/` URL — no end‑user config change needed.
+
+To self‑host instead of GitHub Releases (custom CDN, R2, S3), set
+`CARMELA_MODELS_BUNDLE_URL` in `.env` to your URL prefix.
 
 ## Quick start
 
@@ -169,5 +175,33 @@ semantic tag), and the export pipeline.
 
 ## License
 
-MIT. Model weights (TRELLIS.2, DINOv3, RMBG‑2.0) keep their original licenses
-which Carmela's installer accepts on your behalf at install time.
+Carmela is released under the **Creative Commons Attribution‑NonCommercial 4.0
+International licence (CC BY‑NC 4.0)**. The source code in this repository is
+additionally available under the **MIT licence**. When both apply, the
+non‑commercial restriction governs combined use of the project.
+
+| Usage                                  | Status         |
+|----------------------------------------|----------------|
+| ✅ Non‑commercial research              | Allowed        |
+| ✅ Educational purposes                 | Allowed        |
+| ❌ Commercial use                       | Prohibited     |
+| ❌ Model training for commercial tools  | Prohibited     |
+| ❌ Commercial R&D                       | Prohibited     |
+
+- Code licence: see [`LICENSE`](LICENSE)
+- Project (assets, models, docs) licence: see [`LICENSE-CC-BY-NC.md`](LICENSE-CC-BY-NC.md)
+
+### Commercial inquiry
+
+For commercial licensing, please contact:
+
+📧 **Sofiane Alla** — <sa@bespokeai.build>
+Subject: **"Carmela Commercial Inquiry"**
+
+### Bundled model weights
+
+TRELLIS.2 (Microsoft, MIT) · DINOv3 ViT‑L/16 (Meta, DINOv3 licence) · RMBG‑2.0
+(Bria, gated CC BY‑NC). Each model's original licence is preserved alongside
+the weights in the bundle. Carmela has accepted these licences on your behalf
+for end‑user distribution under CC BY‑NC; the same restrictions apply
+downstream.

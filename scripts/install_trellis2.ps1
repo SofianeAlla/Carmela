@@ -50,6 +50,13 @@ uv pip install --python $pyExe `
     "easydict" `
     "kornia"
 
+Write-Host "[4.5/5] Fetching model weights..." -ForegroundColor Cyan
+# Zero-friction path: when CARMELA_MODELS_BUNDLE_URL is set in .env (or env),
+# pull TRELLIS.2 / DINOv3 / RMBG-2.0 weights from the Carmela CDN — no HF
+# auth, no license click-through. If it's NOT set, the user falls back to
+# the manual HF flow (huggingface-cli login + license acceptance per model).
+& "$PSScriptRoot\fetch_models_bundle.ps1"
+
 Write-Host "[5/5] Pre-flight check..." -ForegroundColor Cyan
 & $pyExe -c @"
 import sys, torch

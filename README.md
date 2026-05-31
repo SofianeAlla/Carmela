@@ -118,6 +118,38 @@ npm run build:win
 
 Produces an NSIS installer in `desktop/dist/`.
 
+### Zero‑friction install for end users (shipping the model bundle)
+
+By default, the installer routes model weight downloads through HuggingFace —
+which means end users would need an HF account, a token, and to accept the
+DINOv3 + RMBG‑2.0 licenses. **Carmela supports a one‑variable override** so
+you can ship a CDN bundle and your users get everything in one step:
+
+1. **One time, on your dev machine** (where you've already accepted the
+   licenses): pack your local HF cache into a CDN‑ready archive set —
+   ```powershell
+   .\scripts\pack_models_bundle.ps1 -Split
+   ```
+   Produces `dist-bundle/manifest.json` + one `*.tar.zst` per model repo
+   (TRELLIS.2‑4B, TRELLIS‑image‑large, DINOv3 ViT‑L/16, RMBG‑2.0). About
+   ~13 GB compressed.
+
+2. **Upload** the contents of `dist-bundle/` to your CDN (S3, R2, Bespoke's
+   Supabase bucket, GitHub Releases, anything that serves static files).
+
+3. **Set the URL** in the installer's `.env` (or `.env.example` shipped with
+   Carmela) so it's baked into the installed app:
+   ```ini
+   CARMELA_MODELS_BUNDLE_URL=https://cdn.bespokeai.build/carmela/v1
+   ```
+
+4. **End users** now run `.\scripts\install.ps1` and `fetch_models_bundle.ps1`
+   pulls the archives straight from your CDN into their HF cache — no HF
+   auth, no license click‑through, no `WinError 10054` retry loop.
+
+The dev path (HF + tokens + licenses) is still available when
+`CARMELA_MODELS_BUNDLE_URL` is empty.
+
 ## Quick start
 
 1. Launch Carmela.

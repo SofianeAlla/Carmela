@@ -1,0 +1,83 @@
+{
+  "name": "carmela-desktop",
+  "version": "0.3.0",
+  "description": "CARMELA - 3D AI Asset Generation for CARLA Simulator",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "author": "Sofiane Alla",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "sharp": "^0.34.5"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "build": {
+    "appId": "com.oliphantfusion.carmela",
+    "productName": "CARMELA",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../api",
+        "to": "api",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../backends",
+        "to": "backends",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../carla_io",
+        "to": "carla_io",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../core",
+        "to": "core",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../post_process",
+        "to": "post_process",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../requirements.txt",
+        "to": "requirements.txt"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "renderer/assets/moose-logo.ico"
+    }
+  }
+}

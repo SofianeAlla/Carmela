@@ -1,0 +1,46 @@
+# ─── Python ────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ─── Node / Electron ───────────────────────────────────────
+desktop/node_modules/
+desktop/dist/
+desktop/out/
+desktop/*.log
+desktop/.electron-builder-cache/
+desktop/scripts/*.log
+
+# ─── CARMELA runtime artefacts ─────────────────────────────
+# Generated assets, model caches, library DBs.
+assets/cache/
+assets/library/
+!assets/library/.gitkeep
+samples/_output/
+
+# ─── Local config ─────────────────────────────────────────
+.env
+.env.local
+*.local
+.claude/
+.vscode/
+.idea/
+
+# ─── OS ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Logs ──────────────────────────────────────────────────
+*.log
+logs/

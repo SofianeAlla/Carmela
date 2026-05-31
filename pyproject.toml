@@ -1,0 +1,8 @@
+[project]
+name = "trellis-carla"
+version = "0.1.0"
+description = "Trellis 2.0 -> CARLA 0.9.16 asset generation pipeline"
+requires-python = ">=3.10,<3.12"
+
+[tool.setuptools.packages.find]
+include = ["backends*", "carla_io*", "post_process*", "ux*"]

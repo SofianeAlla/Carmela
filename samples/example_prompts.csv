@@ -1,0 +1,9 @@
+prompt,image,asset_class,quality,seed
+"Bright orange traffic cone with reflective stripe",,prop,draft,0
+"Folded cardboard moving box on asphalt",,debris,draft,1
+"European stop sign on metal post",,sign,standard,2
+"Concrete jersey barrier scuffed",,barrier,draft,3
+"Galvanised steel fire hydrant red",,prop,standard,4
+"Small bush evergreen",,vegetation,draft,5
+"Plastic shopping bag on road",,debris,draft,6
+"Yellow rectangular construction sign",,sign,standard,7

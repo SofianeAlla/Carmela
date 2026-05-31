@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <style>
+      .fill  { fill: #b07a5a; }
+      .line  { fill: none; stroke: #5a2f1d; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+      .thick { fill: none; stroke: #5a2f1d; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+      .dotF  { fill: #5a2f1d; }
+    </style>
+  </defs>
+  <!-- body silhouette fill -->
+  <path class="fill" d="
+    M70 92 Q70 76 84 76 L132 76 Q146 76 146 92 L146 110
+    L172 122 L172 188 L150 188 L150 162 L100 162 L100 188 L78 188
+    L78 138 Q72 136 64 130 L40 130 Q34 130 34 122 Q34 114 40 114
+    L62 116 Q70 110 70 92 Z"/>
+  <!-- antlers, left -->
+  <path class="thick" d="M86 78 L70 36 M86 78 L52 56 M86 78 L100 30 M86 78 L120 42"/>
+  <!-- antlers, right -->
+  <path class="thick" d="M130 78 L146 36 M130 78 L164 56 M130 78 L116 30 M130 78 L100 32"/>
+  <!-- body outline -->
+  <path class="line" d="
+    M70 92 Q70 76 84 76 L132 76 Q146 76 146 92 L146 110
+    L172 122 L172 188 L150 188 L150 162 L100 162 L100 188 L78 188
+    L78 138 Q72 136 64 130 L40 130 Q34 130 34 122 Q34 114 40 114
+    L62 116 Q70 110 70 92 Z"/>
+  <!-- legs detail (back/inner) -->
+  <path class="line" d="M158 162 L158 184 M108 162 L108 184"/>
+  <!-- eye -->
+  <circle class="dotF" cx="58" cy="108" r="4"/>
+  <!-- ground line -->
+  <path class="thick" d="M30 204 L210 204"/>
+  <!-- decorations: O, X, dots -->
+  <circle class="line" cx="200" cy="60" r="9"/>
+  <path class="thick" d="M168 54 L180 66 M168 66 L180 54"/>
+  <circle class="dotF" cx="208" cy="86" r="4"/>
+  <circle class="dotF" cx="32" cy="170" r="4"/>
+</svg>

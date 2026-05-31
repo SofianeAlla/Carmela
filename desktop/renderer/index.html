@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Carmela by Bespoke AI | Free 3D AI Asset Generation for Carla Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/icons.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <!-- ====== SIDEBAR ====== -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">
+            <!-- Prefer the user-supplied PNG if it exists at assets/moose-logo.png;
+                 fall back to the SVG. -->
+            <img src="assets/moose-logo.png" alt="Carmela"
+                 onerror="this.onerror=null;this.src='assets/moose-logo.svg'"
+                 width="40" height="40"/>
+          </div>
+          <div>
+            <div class="brand-name">Carmela</div>
+            <div class="brand-sub"><i>by</i> Bespoke AI · CARLA 0.9.16</div>
+          </div>
+        </div>
+
+        <div class="nav-section">Workspace</div>
+        <nav class="nav">
+          <button class="nav-item active" data-view="dashboard"><i class="ic ic-grid"></i><span>Dashboard</span></button>
+          <button class="nav-item"        data-view="generate"><i class="ic ic-sparkle"></i><span>Generate</span></button>
+          <button class="nav-item"        data-view="batch"><i class="ic ic-stack"></i><span>Batch</span></button>
+          <button class="nav-item"        data-view="library"><i class="ic ic-library"></i><span>Library</span><span class="badge" id="nav-lib-count"></span></button>
+        </nav>
+
+        <div class="nav-section">CARLA</div>
+        <nav class="nav">
+          <button class="nav-item" data-view="carla-export"><i class="ic ic-export"></i><span>Export Pipeline</span></button>
+          <button class="nav-item" data-view="carla-sim"><i class="ic ic-server"></i><span>Live Simulator</span></button>
+        </nav>
+
+        <div class="nav-section">System</div>
+        <nav class="nav">
+          <button class="nav-item" data-view="settings"><i class="ic ic-gear"></i><span>Settings</span></button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="be-row" id="sb-be-bespoke"><span class="dot off"></span> BespokeAI</div>
+          <div class="be-row" id="sb-be-trellis"><span class="dot off"></span> TRELLIS.2</div>
+          <div class="be-row" id="sb-be-carla"><span class="dot off"></span> CARLA</div>
+        </div>
+      </aside>
+
+      <!-- ====== MAIN ====== -->
+      <main class="main">
+        <div class="topbar">
+          <div class="crumbs"><span id="crumb-section">Workspace</span><span class="crumb-sep">›</span><span id="crumb-page">Dashboard</span></div>
+          <div class="topbar-actions">
+            <button class="icon-btn" id="action-launch-carla" title="Launch CarlaUE4"><i class="ic ic-play"></i></button>
+            <button class="icon-btn" id="action-refresh"      title="Re-check status"><i class="ic ic-refresh"></i></button>
+          </div>
+        </div>
+
+        <!-- ===== DASHBOARD ===== -->
+        <section id="view-dashboard" class="view active">
+
+          <!-- API key onboarding banner (shown only when key is missing) -->
+          <div id="bespoke-banner" class="key-banner" hidden>
+            <div class="key-banner-body">
+              <div class="key-banner-title">
+                <i class="ic ic-sparkle"></i>
+                <span>Connect your BespokeAI account</span>
+              </div>
+              <div class="key-banner-sub">CARMELA needs your <b>bspk_…</b> API key to generate assets. Free credits at signup.</div>
+            </div>
+            <div class="key-banner-actions">
+              <button class="btn ghost" id="bespoke-banner-get" data-url="https://bespokeai.build">Get an API key</button>
+              <button class="btn primary" data-goto="settings">Enter key</button>
+            </div>
+          </div>
+
+          <div class="hero">
+            <div>
+              <h1>Free <i>3D AI</i> Asset Generation<br/>for the CARLA Simulator.</h1>
+              <p class="lede">Generate vehicles, props and infrastructure with TRELLIS&nbsp;2.0 &amp; Bespoke&nbsp;AI, post-process for AV simulation, and ship straight into CARLA's import pipeline.</p>
+              <div class="hero-actions">
+                <button class="btn primary lg" data-goto="generate"><i class="ic ic-sparkle"></i>New asset</button>
+                <button class="btn ghost lg"   data-goto="batch"><i class="ic ic-stack"></i>Batch generate</button>
+                <button class="btn ghost lg"   data-goto="carla-export"><i class="ic ic-export"></i>Export to CARLA</button>
+              </div>
+            </div>
+            <div class="hero-art">
+              <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#fb923c" stop-opacity="0.7"/>
+                    <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.5"/>
+                  </linearGradient>
+                </defs>
+                <g stroke="#2a2f3a" stroke-width="0.4">
+                  <path d="M40 140 L160 80 L280 140 L160 200 Z" fill="url(#g1)" fill-opacity="0.18"/>
+                  <path d="M40 140 L160 80 L280 140 L160 200 Z" />
+                  <path d="M160 80 L160 200" />
+                  <path d="M100 110 L220 110 M100 170 L220 170" stroke-dasharray="2 4" stroke-opacity="0.6"/>
+                </g>
+                <g fill="#f97316" opacity="0.85">
+                  <circle cx="160" cy="80" r="3"/>
+                  <circle cx="40" cy="140" r="3"/>
+                  <circle cx="280" cy="140" r="3"/>
+                  <circle cx="160" cy="200" r="3"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div class="kpi-row">
+            <div class="kpi">
+              <div class="kpi-label">Assets in library</div>
+              <div class="kpi-value" id="kpi-total">—</div>
+              <div class="kpi-sub" id="kpi-classes">no class breakdown yet</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Active backend</div>
+              <div class="kpi-value" id="kpi-backend">—</div>
+              <div class="kpi-sub" id="kpi-backend-msg">scanning…</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">CARLA</div>
+              <div class="kpi-value" id="kpi-carla">—</div>
+              <div class="kpi-sub" id="kpi-carla-msg">unknown</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">VRAM</div>
+              <div class="kpi-value" id="kpi-vram">—</div>
+              <div class="kpi-sub" id="kpi-vram-msg">GPU info pending</div>
+            </div>
+          </div>
+
+          <div class="card-row">
+            <div class="card section-card">
+              <h3>Recent assets</h3>
+              <div id="dash-recent" class="dash-recent"><div class="empty">No assets yet — generate one to populate the library.</div></div>
+            </div>
+            <div class="card section-card">
+              <h3>Backend health</h3>
+              <table class="table compact" id="dash-be"><tbody></tbody></table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== GENERATE ===== -->
+        <section id="view-generate" class="view">
+          <div class="page-header">
+            <div>
+              <h2>Generate asset</h2>
+              <p class="hint">Text + image → CARLA-ready GLB / PLY with PBR materials and collision hull.</p>
+            </div>
+          </div>
+          <div class="g-grid">
+            <div class="card g-form">
+              <label class="lbl">Text prompt
+                <textarea id="gen-prompt" rows="3" placeholder="Weathered orange traffic cone with reflective stripe"></textarea>
+              </label>
+
+              <label class="lbl">Reference image
+                <div class="image-drop" id="gen-drop">
+                  <img id="gen-image-preview" alt=""/>
+                  <div class="drop-empty">
+                    <i class="ic ic-image lg"></i>
+                    <div>Drop an image or click to choose</div>
+                    <div class="hint">.png .jpg .webp</div>
+                  </div>
+                </div>
+                <span id="gen-image-path" class="hint">No image selected</span>
+              </label>
+
+              <div class="grid-2">
+                <label class="lbl">Asset class
+                  <select id="gen-class">
+                    <option>vehicle</option><option selected>prop</option>
+                    <option>pedestrian</option><option>sign</option>
+                    <option>debris</option><option>vegetation</option>
+                    <option>barrier</option><option>building</option><option>other</option>
+                  </select>
+                </label>
+                <label class="lbl">Quality
+                  <select id="gen-quality">
+                    <option value="draft">Draft · 512³ · ~30s</option>
+                    <option value="standard" selected>Standard · 1024³ · ~2m</option>
+                    <option value="hero">Hero · 1536³ · ~6m</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="grid-2">
+                <label class="lbl">Seed
+                  <input id="gen-seed" type="number" value="0" />
+                </label>
+                <label class="lbl">Real height (m)
+                  <input id="gen-height" type="number" step="0.05" placeholder="auto from class"/>
+                </label>
+              </div>
+
+              <label class="lbl">Output formats
+                <div class="chip-row">
+                  <label class="chip"><input id="fmt-glb" type="checkbox" checked> GLB (textured)</label>
+                  <label class="chip"><input id="fmt-ply" type="checkbox"> PLY (geometry)</label>
+                  <label class="chip"><input id="fmt-collision" type="checkbox" checked> Collision hull</label>
+                  <label class="chip"><input id="fmt-lod" type="checkbox"> LOD chain</label>
+                </div>
+              </label>
+
+              <label class="lbl">Backend
+                <select id="gen-backend">
+                  <option value="">Auto (picks healthiest)</option>
+                  <option value="bespoke_api">BespokeAI API (cloud)</option>
+                  <option value="local_trellis2">TRELLIS.2 local (8GB low-VRAM)</option>
+                </select>
+              </label>
+
+              <button id="gen-run" class="btn primary lg"><i class="ic ic-sparkle"></i>Generate asset</button>
+              <div id="gen-status" class="status-line"></div>
+              <div id="gen-progress" class="progress-wrap" hidden>
+                <div class="progress-bar"><div class="progress-fill" id="gen-progress-fill"></div></div>
+                <div class="progress-meta">
+                  <span id="gen-progress-pct">0%</span>
+                  <span id="gen-progress-msg" class="hint"></span>
+                </div>
+              </div>
+              <div id="gen-downloads" class="download-row" hidden>
+                <button class="btn" id="gen-dl-glb"><i class="ic ic-export"></i>Download GLB</button>
+                <button class="btn ghost" id="gen-dl-ply" hidden><i class="ic ic-export"></i>Download PLY</button>
+                <button class="btn ghost" id="gen-open-folder">Open in folder</button>
+              </div>
+            </div>
+
+            <div class="g-preview">
+              <div class="card">
+                <div class="card-header">
+                  <h3>Live preview</h3>
+                  <div class="seg" id="gen-preview-tabs">
+                    <button class="seg-btn active" data-pv="glb">GLB</button>
+                    <button class="seg-btn" data-pv="ply">PLY</button>
+                  </div>
+                </div>
+                <div id="gen-viewer-glb" class="three-host"></div>
+                <div id="gen-viewer-ply" class="three-host" style="display:none"></div>
+              </div>
+
+              <div class="card compliance-card">
+                <div class="card-header">
+                  <h3>CARLA compliance</h3>
+                  <span class="hint" id="compliance-summary">Generate first, then configure.</span>
+                </div>
+                <div class="compliance-grid">
+                  <div class="comp-tile">
+                    <div class="comp-label">Bounding box (tight)</div>
+                    <div class="comp-value mono" id="comp-bbox">— × — × —</div>
+                    <button class="btn xs" id="comp-edit-bbox" disabled>Edit…</button>
+                  </div>
+                  <div class="comp-tile">
+                    <div class="comp-label">Pivot point</div>
+                    <select id="comp-pivot">
+                      <option value="ground-center">ground · center</option>
+                      <option value="ground-rear-axle">ground · rear axle (vehicle)</option>
+                      <option value="ground-front">ground · front</option>
+                      <option value="bbox-center">bbox center</option>
+                      <option value="custom">custom…</option>
+                    </select>
+                  </div>
+                  <div class="comp-tile">
+                    <div class="comp-label">Semantic tag (CARLA)</div>
+                    <select id="comp-semantic">
+                      <option value="">— auto from class —</option>
+                      <option value="Vehicle">Vehicle (10)</option>
+                      <option value="Pedestrian">Pedestrian (4)</option>
+                      <option value="TrafficSign">TrafficSign (12)</option>
+                      <option value="TrafficLight">TrafficLight (7)</option>
+                      <option value="Other">Other (22)</option>
+                      <option value="Static">Static (8)</option>
+                      <option value="Building">Building (1)</option>
+                      <option value="Fence">Fence (2)</option>
+                      <option value="Vegetation">Vegetation (9)</option>
+                      <option value="Pole">Pole (5)</option>
+                      <option value="Dynamic">Dynamic (21)</option>
+                    </select>
+                  </div>
+                  <div class="comp-tile">
+                    <div class="comp-label">Collision shape</div>
+                    <select id="comp-collision">
+                      <option value="convex">Convex hull (default)</option>
+                      <option value="box">Box (axis-aligned)</option>
+                      <option value="mesh">Mesh (precise · slower)</option>
+                      <option value="none">None (decorative)</option>
+                    </select>
+                  </div>
+                  <div class="comp-tile">
+                    <div class="comp-label">LOD targets (tri count)</div>
+                    <div class="lod-row">
+                      <input class="mini" id="lod-0" type="number" value="50000" />
+                      <input class="mini" id="lod-1" type="number" value="12000" />
+                      <input class="mini" id="lod-2" type="number" value="3000" />
+                    </div>
+                    <div class="hint">LOD0 / LOD1 / LOD2</div>
+                  </div>
+                  <div class="comp-tile vehicle-only" style="display:none">
+                    <div class="comp-label">Vehicle physics</div>
+                    <div class="mini-row">
+                      <label><span>mass(kg)</span><input id="veh-mass" type="number" value="1500"/></label>
+                      <label><span>wheel R(m)</span><input id="veh-wheel-r" type="number" step="0.01" value="0.32"/></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <pre id="gen-meta" class="meta-pre"></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== BATCH ===== -->
+        <section id="view-batch" class="view">
+          <div class="page-header">
+            <h2>Batch generation</h2>
+            <p class="hint">One prompt per line. All inherit the defaults below. Jobs run async and land in the library.</p>
+          </div>
+          <div class="card">
+            <div class="grid-3">
+              <label class="lbl">Default class
+                <select id="batch-class">
+                  <option>vehicle</option><option selected>prop</option>
+                  <option>pedestrian</option><option>sign</option>
+                  <option>debris</option><option>vegetation</option>
+                  <option>barrier</option><option>building</option><option>other</option>
+                </select>
+              </label>
+              <label class="lbl">Quality
+                <select id="batch-quality">
+                  <option value="draft" selected>Draft</option>
+                  <option value="standard">Standard</option>
+                  <option value="hero">Hero</option>
+                </select>
+              </label>
+              <label class="lbl">Backend
+                <select id="batch-backend">
+                  <option value="">Auto</option>
+                  <option value="bespoke_api">BespokeAI</option>
+                  <option value="local_trellis2">TRELLIS.2 local</option>
+                </select>
+              </label>
+            </div>
+            <textarea id="batch-prompts" rows="8" placeholder="Bright orange traffic cone&#10;Folded cardboard box&#10;Wet newspaper on asphalt&#10;Snow-covered fire hydrant"></textarea>
+            <div class="row">
+              <button id="batch-run" class="btn primary"><i class="ic ic-stack"></i>Run batch</button>
+              <span id="batch-progress" class="status-line"></span>
+            </div>
+          </div>
+          <div class="card">
+            <table class="table">
+              <thead><tr><th>#</th><th>prompt</th><th>class</th><th>backend</th><th>seconds</th><th>status</th></tr></thead>
+              <tbody id="batch-results"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== LIBRARY ===== -->
+        <section id="view-library" class="view">
+          <div class="page-header">
+            <h2>Asset library</h2>
+            <p class="hint">All generated assets are post-processed and stored locally. Click any card to inspect or stage for CARLA.</p>
+          </div>
+          <div class="card">
+            <div class="lib-toolbar">
+              <div class="chip-row" id="lib-chips">
+                <button class="chip active" data-cls="">all</button>
+                <button class="chip" data-cls="vehicle">vehicle</button>
+                <button class="chip" data-cls="prop">prop</button>
+                <button class="chip" data-cls="sign">sign</button>
+                <button class="chip" data-cls="debris">debris</button>
+                <button class="chip" data-cls="vegetation">vegetation</button>
+                <button class="chip" data-cls="barrier">barrier</button>
+                <button class="chip" data-cls="building">building</button>
+              </div>
+              <span class="spacer"></span>
+              <button id="lib-refresh" class="btn"><i class="ic ic-refresh"></i></button>
+              <button id="lib-select-all" class="btn">Select all</button>
+              <button id="lib-stage" class="btn primary"><i class="ic ic-export"></i>Stage <span id="lib-selcount">0</span> for CARLA</button>
+            </div>
+            <div class="lib-content">
+              <div id="lib-grid" class="grid"></div>
+              <div class="lib-detail">
+                <div id="lib-viewer" class="three-host lib-viewer"></div>
+                <div id="lib-detail-actions" class="download-row" hidden>
+                  <button class="btn" id="lib-dl-glb"><i class="ic ic-export"></i>Download GLB</button>
+                  <button class="btn ghost" id="lib-dl-ply" hidden><i class="ic ic-export"></i>Download PLY</button>
+                  <button class="btn ghost" id="lib-open-folder">Open in folder</button>
+                  <button class="btn ghost" id="lib-delete" title="Remove from library">Delete</button>
+                </div>
+                <div id="lib-info" class="info-card" hidden></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== CARLA EXPORT ===== -->
+        <section id="view-carla-export" class="view">
+          <div class="page-header">
+            <h2>CARLA export pipeline</h2>
+            <p class="hint">
+              Stage selected assets into <code>&lt;CARLA_ROOT&gt;/Import/&lt;package&gt;/</code> as FBX + JSON, then run
+              CARLA's <code>ImportAssets</code> step in Unreal Editor (or via <code>make import</code> in a CARLA source tree)
+              to bake new blueprints. Works against local OR remote CARLA installs.
+            </p>
+          </div>
+
+          <div class="card-row">
+            <div class="card">
+              <h3>1 · CARLA target</h3>
+              <div class="grid-2">
+                <label class="lbl">CARLA root path
+                  <input id="carla-root" type="text" value="" placeholder="C:/Users/allas/CARLA_0.9.16" />
+                </label>
+                <label class="lbl">Transport
+                  <select id="carla-transport">
+                    <option value="local">Local install (this machine)</option>
+                    <option value="ssh">Remote · SSH (manual)</option>
+                    <option value="smb">Remote · SMB / network share</option>
+                  </select>
+                </label>
+              </div>
+              <label class="lbl">Remote host (optional)
+                <input id="carla-remote-host" type="text" placeholder="user@build-farm.local:/opt/carla/Import" />
+              </label>
+              <div class="hint">Local writes to the path on this machine. Remote stages locally and shows a one-liner to <code>rsync</code> / <code>robocopy</code>.</div>
+            </div>
+            <div class="card">
+              <h3>2 · Package</h3>
+              <label class="lbl">Package name
+                <input id="pkg-name" type="text" value="carmela_pack" />
+              </label>
+              <label class="lbl">Naming convention
+                <select id="pkg-naming">
+                  <option value="carla">CARLA · vehicle.brand.model · static.prop.name</option>
+                  <option value="raw">Raw (asset_id only)</option>
+                </select>
+              </label>
+              <label class="chip"><input id="pkg-with-collision" type="checkbox" checked> Include collision meshes</label>
+              <label class="chip"><input id="pkg-with-lods" type="checkbox"> Include LODs</label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h3>3 · Assets selected for export</h3>
+              <span id="exp-selected-count" class="hint">0 selected · pick from <a href="#" data-goto="library">Library</a></span>
+            </div>
+            <table class="table">
+              <thead><tr><th>asset_id</th><th>class</th><th>extent (m)</th><th>tris</th><th>semantic</th><th></th></tr></thead>
+              <tbody id="exp-rows"><tr><td colspan=6 class="hint empty">Nothing selected yet.</td></tr></tbody>
+            </table>
+          </div>
+
+          <div class="card-row">
+            <div class="card">
+              <h3>4 · Stage</h3>
+              <button id="exp-stage" class="btn primary lg"><i class="ic ic-export"></i>Stage package</button>
+              <div id="exp-stage-out" class="status-line"></div>
+            </div>
+            <div class="card">
+              <h3>5 · Bake (Unreal-side)</h3>
+              <p class="hint">After staging, run this one-liner in your CARLA source tree (or the CarlaUE4 editor's Import menu):</p>
+              <pre class="code-block" id="exp-bake-cmd">make import ARGS="--package carmela_pack"</pre>
+              <button class="btn xs" id="exp-copy-cmd"><i class="ic ic-copy"></i>Copy</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== CARLA SIM ===== -->
+        <section id="view-carla-sim" class="view">
+          <div class="page-header">
+            <h2>Live simulator control</h2>
+            <p class="hint">Connect to a CARLA simulator (local or remote) for runtime spawning + sanity checks. Optional — most workflows happen via the Export pipeline.</p>
+          </div>
+
+          <div class="card">
+            <div class="grid-3">
+              <label class="lbl">Host <input id="carla-host" value="localhost" /></label>
+              <label class="lbl">Port <input id="carla-port" type="number" value="2000" /></label>
+              <label class="lbl">&nbsp;
+                <div class="row">
+                  <button id="carla-check" class="btn">Check</button>
+                  <button id="carla-launch" class="btn">Launch local sim</button>
+                </div>
+              </label>
+            </div>
+            <div id="carla-status" class="status-line"></div>
+          </div>
+
+          <div class="card-row">
+            <div class="card">
+              <h3>Blueprint browser</h3>
+              <div class="row">
+                <input id="carla-bp-filter" value="vehicle" placeholder="filter prefix"/>
+                <button id="carla-bp-list" class="btn">List</button>
+              </div>
+              <select id="carla-bp" size="10"></select>
+            </div>
+            <div class="card">
+              <h3>Spawn</h3>
+              <div class="grid-2">
+                <label class="lbl">X <input id="sp-x" type="number" value="0"/></label>
+                <label class="lbl">Y <input id="sp-y" type="number" value="0"/></label>
+                <label class="lbl">Z <input id="sp-z" type="number" value="0.5"/></label>
+                <label class="lbl">Yaw° <input id="sp-yaw" type="number" value="0"/></label>
+              </div>
+              <label class="chip"><input id="sp-vehicle" type="checkbox"> spawn at random vehicle spawn point</label>
+              <button id="carla-spawn" class="btn primary">Spawn</button>
+              <pre id="carla-spawn-out" class="meta-pre"></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== SETTINGS ===== -->
+        <section id="view-settings" class="view">
+          <div class="page-header">
+            <h2>Settings</h2>
+            <p class="hint">Backend keys, health, paths, advanced.</p>
+          </div>
+
+          <!-- ===== BespokeAI API key card ===== -->
+          <div class="card key-card">
+            <div class="card-header">
+              <h3>BespokeAI API key</h3>
+              <span class="pill" id="key-pill">checking…</span>
+            </div>
+            <p class="hint">
+              CARMELA's primary backend talks to <a href="#" data-url="https://bespokeai.build">bespokeai.build</a>.
+              Paste your <code>bspk_…</code> key here — it's stored locally in <code>.env</code> next to the app, never sent anywhere except the BespokeAI API.
+            </p>
+            <div class="key-row">
+              <input id="bespoke-key-input" type="password" placeholder="bspk_your_api_key_here" autocomplete="off" spellcheck="false" />
+              <button class="icon-btn" id="bespoke-key-reveal" title="Show / hide"><i class="ic ic-image"></i></button>
+              <button class="btn primary" id="bespoke-key-save">Save &amp; test</button>
+              <button class="btn ghost" id="bespoke-key-get" data-url="https://bespokeai.build">Get a key</button>
+            </div>
+            <div id="bespoke-key-status" class="status-line"></div>
+          </div>
+
+          <div class="card-row">
+            <div class="card">
+              <h3>Backend health</h3>
+              <table class="table" id="settings-backends"><tbody></tbody></table>
+              <button id="settings-refresh" class="btn"><i class="ic ic-refresh"></i>Re-check</button>
+            </div>
+            <div class="card">
+              <h3>Paths &amp; env</h3>
+              <table class="table compact" id="settings-paths"><tbody></tbody></table>
+              <div class="hint">Edit <code>.env</code> in the project root and restart to change.</div>
+            </div>
+          </div>
+          <!-- ===== Local TRELLIS 2.0 status card ===== -->
+          <div class="card t2-card">
+            <div class="card-header">
+              <h3>
+                <i class="ic ic-box"></i>
+                TRELLIS 2.0 — local engine
+              </h3>
+              <span class="pill" id="t2-pill">checking…</span>
+            </div>
+            <p class="hint">
+              Microsoft TRELLIS.2 is bundled in CARMELA's installer. The status below reflects what's already on this machine.
+              If anything's missing, re-run <code>scripts/install.ps1</code> from a terminal — it auto-installs the model + native CUDA extensions.
+            </p>
+            <div class="t2-ext-grid">
+              <div class="t2-ext" data-ext="cumesh">    <span class="dot off"></span> cumesh<br><span class="hint">mesh ops</span></div>
+              <div class="t2-ext" data-ext="flex_gemm"> <span class="dot off"></span> flex_gemm<br><span class="hint">sparse kernels</span></div>
+              <div class="t2-ext" data-ext="o_voxel">   <span class="dot off"></span> o_voxel<br><span class="hint">GLB export</span></div>
+              <div class="t2-ext" data-ext="nvdiffrast"><span class="dot off"></span> nvdiffrast<br><span class="hint">rasterizer</span></div>
+              <div class="t2-ext" data-ext="nvdiffrec_render"> <span class="dot off"></span> nvdiffrec<br><span class="hint">PBR render</span></div>
+            </div>
+            <div class="t2-actions">
+              <button class="btn" id="t2-refresh"><i class="ic ic-refresh"></i>Re-check</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-host" id="toast-host"></div>
+
+    <!-- ===== BBOX MODAL ===== -->
+    <div class="modal" id="modal-bbox" hidden>
+      <div class="modal-bg" data-close></div>
+      <div class="modal-body">
+        <div class="modal-header">
+          <h3>Bounding box configurator</h3>
+          <button class="icon-btn" data-close><i class="ic ic-x"></i></button>
+        </div>
+        <div class="modal-content">
+          <div id="bbox-viewer" class="three-host" style="min-height:380px"></div>
+          <div class="bbox-controls">
+            <div class="lbl">Tight bbox (visual, m)</div>
+            <div class="bbox-row"><span>min</span>
+              <input id="bbox-tmin-x" type="number" step="0.01"/>
+              <input id="bbox-tmin-y" type="number" step="0.01"/>
+              <input id="bbox-tmin-z" type="number" step="0.01"/>
+            </div>
+            <div class="bbox-row"><span>max</span>
+              <input id="bbox-tmax-x" type="number" step="0.01"/>
+              <input id="bbox-tmax-y" type="number" step="0.01"/>
+              <input id="bbox-tmax-z" type="number" step="0.01"/>
+            </div>
+            <div class="row">
+              <button class="btn" id="bbox-auto">Auto from mesh</button>
+              <button class="btn" id="bbox-pad">+5% padding</button>
+            </div>
+
+            <div class="lbl">Collision bbox (physics)</div>
+            <div class="bbox-row"><span>min</span>
+              <input id="bbox-cmin-x" type="number" step="0.01"/>
+              <input id="bbox-cmin-y" type="number" step="0.01"/>
+              <input id="bbox-cmin-z" type="number" step="0.01"/>
+            </div>
+            <div class="bbox-row"><span>max</span>
+              <input id="bbox-cmax-x" type="number" step="0.01"/>
+              <input id="bbox-cmax-y" type="number" step="0.01"/>
+              <input id="bbox-cmax-z" type="number" step="0.01"/>
+            </div>
+            <div class="row">
+              <button class="btn ghost" data-close>Cancel</button>
+              <button class="btn primary" id="bbox-save">Save bbox</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../node_modules/three/build/three.module.js",
+          "three/addons/": "../node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="js/viewer.js"></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
